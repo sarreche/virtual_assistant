@@ -15,197 +15,214 @@ import datetime
 # wikipedia is a Python library that allows you to access and retrieve information from Wikipedia.
 import wikipedia
 
-# opciones de voz / idioma
+
+# voice/language options
 #id1 = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ES-MX_SABINA_11.0'
 #id2 = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_ZIRA_11.0'
 
-# escuchar nuestro microfono y devolver el audio comotexto
-def trasformar_audio_en_texto():
 
-    # almacenar recognizer en variable
+# Listen to the microphone and return the audio as text
+def transform_audio_to_text():
+
+
+    # store recognizer in variable
     r = sr.Recognizer()
 
-    # configurar el microfono
-    with sr.Microphone() as origen:
+    # configure the microphone
+    with sr.Microphone() as source:
 
-        # tiempo de espera
+        # waiting time
         r.pause_threshold = 0.8
 
-        # informar que comenzo la grabacion
-        print("ya puedes hablar")
+        # inform that recording has started
+        print("You can speak now")
 
-        # guardar lo que escuche como audio
-        audio = r.listen(origen)
+        # save what is heard as audio
+        audio = r.listen(source)
 
         try:
             # Performs speech recognition on audio_data (an AudioData instance), using the Google Speech Recognition API.
             pedido = r.recognize_google(audio, language="es-ar")
 
-            # prueba de que pudo ingresar
-            print("Dijiste: " + pedido)
 
-            # devolver pedido
+            # test that input was received
+            print("You said: " + pedido)
+
+            # return request
             return pedido
 
-        # en caso de que no comprenda el audio
+
+        # if audio is not understood
         except sr.UnknownValueError:
 
-            # prueba de que no comprendio el audio
-            print("ups, no entendi")
+            # test that audio was not understood
+            print("Oops, I didn't understand")
 
-            # devolver error
-            return "sigo esperando"
+            # return error
+            return "still waiting"
 
-        # en caso de no resolver el pedido
+
+        # if request cannot be resolved
         except sr.RequestError:
 
-            # prueba de que no comprendio el audio
-            print("ups, no hay servicio")
+            # test that service is unavailable
+            print("Oops, no service")
 
-            # devolver error
-            return "sigo esperando"
+            # return error
+            return "still waiting"
 
-        # error inesperado
+
+        # unexpected error
         except:
 
-            # prueba de que no comprendio el audio
-            print("ups, algo ha salido mal")
+            # test that something went wrong
+            print("Oops, something went wrong")
 
-            # devolver error
-            return "sigo esperando"
+            # return error
+            return "still waiting"
 
 
-# funcion para que el asistente pueda ser escuchado
-def hablar(mensaje):
 
-    # encender el motor de pyttsx3
+# Function for the assistant to speak
+def speak(message):
+
+
+    # turn on pyttsx3 engine
     engine = pyttsx3.init()
     #engine.setProperty('voice', id3)
 
-    # pronunciar mensaje
-    engine.say(mensaje)
+    # speak message
+    engine.say(message)
     engine.runAndWait()
 
 
-# informar el dia de la semana
-def pedir_dia():
 
-    # crear variable con datos de hoy
-    dia = datetime.date.today()
-    print(dia)
-
-    # crear variable para el dia de semana
-    dia_semana = dia.weekday()
-    print(dia_semana)
-
-    # diccionario con nombres de dias
-    calendario = {0: 'Lunes',
-                  1: 'Martes',
-                  2: 'Miércoles',
-                  3: 'Jueves',
-                  4: 'Viernes',
-                  5: 'Sábado',
-                  6: 'Domingo'}
-
-    # decir el dia de la semana
-    hablar(f'Hoy es {calendario[dia_semana]}')
+# Inform the day of the week
+def get_day():
 
 
-# informar que hora es
-def pedir_hora():
+    # create variable with today's date
+    today = datetime.date.today()
+    print(today)
 
-    # crear una variab;e con datos de la hora
-    hora = datetime.datetime.now()
-    hora = f'En este momento son las {hora.hour} horas con {hora.minute} minutos y {hora.second} segundos'
-    print(hora)
+    # create variable for weekday
+    weekday = today.weekday()
+    print(weekday)
 
-    # decir la hora
-    hablar(hora)
+    # dictionary with day names
+    calendar = {0: 'Monday',
+                1: 'Tuesday',
+                2: 'Wednesday',
+                3: 'Thursday',
+                4: 'Friday',
+                5: 'Saturday',
+                6: 'Sunday'}
+
+    # say the day of the week
+    speak(f'Today is {calendar[weekday]}')
 
 
-# funcion saludo inicial
-def saludo_inicial():
 
-    # crear variable condatos de hora
-    hora = datetime.datetime.now()
-    if hora.hour < 6 or hora.hour > 20:
-        momento = 'Buenas noches'
-    elif 6 <= hora.hour < 13:
-        momento = 'Buen día'
+# Inform the current time
+def get_time():
+
+
+    # create a variable with current time data
+    now = datetime.datetime.now()
+    time_str = f'At this moment it is {now.hour} hours, {now.minute} minutes and {now.second} seconds'
+    print(time_str)
+
+    # say the time
+    speak(time_str)
+
+
+
+# Initial greeting function
+def initial_greeting():
+
+
+    # create variable with current hour
+    now = datetime.datetime.now()
+    if now.hour < 6 or now.hour > 20:
+        moment = 'Good evening'
+    elif 6 <= now.hour < 13:
+        moment = 'Good morning'
     else:
-        momento = 'Buenas tardes'
+        moment = 'Good afternoon'
 
-    # decir el saludo
-    hablar(f'{momento}, soy Helena, tu asistente personal. Por favor, dime en qué te puedo ayudar')
+    # say the greeting
+    speak(f'{moment}, I am Helena, your personal assistant. Please tell me how I can help you')
 
 
-# funcion central del asistente
-def pedir_cosas():
 
-    # activar saludo inicial
-    saludo_inicial()
+# Main assistant function
+def main_loop():
 
-    # variable de corte
-    comenzar = True
 
-    # loop central
-    while comenzar:
+    # activate initial greeting
+    initial_greeting()
 
-        # activar el micro y guardar el pedido en un string
-        pedido = trasformar_audio_en_texto().lower()
+    # loop control variable
+    running = True
 
-        if 'abrir youtube' in pedido:
-            hablar('Con gusto, estoy abriendo youTube')
+    # main loop
+    while running:
+
+        # activate microphone and save request as string
+        request = transform_audio_to_text().lower()
+
+        if 'abrir youtube' in request:
+            speak('Sure, opening YouTube')
             webbrowser.open('https://www.youtube.com')
             continue
-        elif 'abrir navegador' in pedido:
-            hablar('Claro, estoy en eso')
+        elif 'abrir navegador' in request:
+            speak('Of course, opening browser')
             webbrowser.open('https://www.google.com')
             continue
-        elif 'qué día es hoy' in pedido:
-            pedir_dia()
+        elif 'qué día es hoy' in request:
+            get_day()
             continue
-        elif 'qué hora es' in pedido:
-            pedir_hora()
+        elif 'qué hora es' in request:
+            get_time()
             continue
-        elif 'busca en wikipedia' in pedido:
-            hablar('Buscando eso en wikipedia')
-            pedido = pedido.replace('busca en wikipedia', '')
+        elif 'busca en wikipedia' in request:
+            speak('Searching that on Wikipedia')
+            request = request.replace('busca en wikipedia', '')
             wikipedia.set_lang('es')
-            resultado = wikipedia.summary(pedido, sentences=1)
-            hablar('Wikipedia dice lo siguiente:')
-            hablar(resultado)
+            result = wikipedia.summary(request, sentences=1)
+            speak('Wikipedia says the following:')
+            speak(result)
             continue
-        elif 'busca en internet' in pedido:
-            hablar('Ya mismo estoy en eso')
-            pedido = pedido.replace('busca en internet', '')
-            pywhatkit.search(pedido)
-            hablar('Esto es lo que he encontrado')
+        elif 'busca en internet' in request:
+            speak('Searching the internet now')
+            request = request.replace('busca en internet', '')
+            pywhatkit.search(request)
+            speak('This is what I found')
             continue
-        elif 'reproducir' in pedido:
-            hablar('Buena idea, ya comienzo a reproducirlo')
-            pywhatkit.playonyt(pedido)
+        elif 'reproducir' in request:
+            speak('Good idea, starting playback')
+            pywhatkit.playonyt(request)
             continue
-        elif 'broma' in pedido:
-            hablar(pyjokes.get_joke('es'))
+        elif 'broma' in request:
+            speak(pyjokes.get_joke('es'))
             continue
-        elif 'precio de las acciones' in pedido:
-            accion = pedido.split('de')[-1].strip()
-            cartera = {'apple':'APPL',
-                       'amazon':'AMZN',
-                       'google':'GOOGL'}
+        elif 'precio de las acciones' in request:
+            stock = request.split('de')[-1].strip()
+            portfolio = {'apple':'APPL',
+                         'amazon':'AMZN',
+                         'google':'GOOGL'}
             try:
-                accion_buscada = cartera[accion]
-                accion_buscada = yf.Ticker(accion_buscada)
-                precio_actual = accion_buscada.info['regularMarketPrice']
-                hablar(f'La encontré, el precio de {accion} es {precio_actual}')
+                searched_stock = portfolio[stock]
+                searched_stock = yf.Ticker(searched_stock)
+                current_price = searched_stock.info['regularMarketPrice']
+                speak(f'Found it, the price of {stock} is {current_price}')
                 continue
             except:
-                hablar("Perdón pero no la he encontrado")
+                speak("Sorry, I couldn't find it")
                 continue
-        elif 'adiós' in pedido:
-            hablar("Me voy a descansar, cualquier cosa me avisas")
+        elif 'adiós' in request:
+            speak("I'm going to rest, let me know if you need anything")
             break
 
 
-pedir_cosas()
+main_loop()
